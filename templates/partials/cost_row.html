@@ -1,0 +1,14 @@
+{{define "cost_row"}}
+<div class="cost-row">
+  <input type="text"
+         name="additional_costs[{{.Index}}][description]"
+         placeholder="Description (e.g. Accessories, Insurance)"
+         value="{{if .Cost}}{{.Cost.Description}}{{end}}">
+  <input type="number"
+         name="additional_costs[{{.Index}}][amount]"
+         step="0.01"
+         placeholder="Amount (negative = credit)"
+         value="{{if .Cost}}{{.Cost.Amount}}{{end}}">
+  <button type="button" class="btn-remove-cost" onclick="this.closest('.cost-row').remove()">×</button>
+</div>
+{{end}}

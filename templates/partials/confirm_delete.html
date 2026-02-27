@@ -1,0 +1,11 @@
+{{define "confirm_delete"}}
+<span class="confirm-text">Delete "{{.Item.Name}}"?</span>
+<button class="btn-sm btn-danger"
+        hx-delete="/items/{{.Item.ID}}"
+        hx-target="#items-table-body"
+        hx-swap="innerHTML">Yes, Delete</button>
+<button class="btn-sm"
+        hx-get="/items/{{.Item.ID}}/cancel-delete"
+        hx-target="#actions-{{.Item.ID}}"
+        hx-swap="innerHTML">Cancel</button>
+{{end}}

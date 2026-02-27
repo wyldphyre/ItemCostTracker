@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Item Cost Tracker</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous" defer></script>
+</head>
+<body>
+  <header>
+    <h1>Item Cost Tracker</h1>
+    <div class="header-actions">
+      <button hx-get="/import"
+              hx-target="#modal-content"
+              hx-swap="innerHTML"
+              hx-on::after-request="document.getElementById('modal').showModal()">
+        Import
+      </button>
+      <a href="/export/json" class="btn">Export JSON</a>
+      <a href="/export/csv" class="btn">Export CSV</a>
+      <button class="btn-primary"
+              hx-get="/items/new"
+              hx-target="#modal-content"
+              hx-swap="innerHTML"
+              hx-on::after-request="document.getElementById('modal').showModal()">
+        + Add Item
+      </button>
+    </div>
+  </header>
+
+  <main>
+    {{block "content" .}}{{end}}
+  </main>
+
+  <dialog id="modal">
+    <div id="modal-content"></div>
+  </dialog>
+</body>
+</html>

@@ -1,0 +1,47 @@
+{{define "import_form"}}
+<form hx-post="/import"
+      hx-encoding="multipart/form-data"
+      hx-target="#modal-content"
+      hx-swap="innerHTML">
+
+  <div class="form-header">
+    <h2>Import Items</h2>
+    <button type="button" class="btn-close" onclick="document.getElementById('modal').close()">✕</button>
+  </div>
+
+  <div class="import-body">
+    {{if .Error}}
+    <div class="import-error">{{.Error}}</div>
+    {{end}}
+
+    <label>
+      JSON File
+      <input type="file" name="file" accept=".json" required>
+      <span class="field-hint">Export from this app or use the <code>importxlsx</code> tool output</span>
+    </label>
+
+    <fieldset class="import-mode">
+      <legend>Import Mode</legend>
+      <label class="radio-label">
+        <input type="radio" name="mode" value="merge" checked>
+        <span>
+          <strong>Merge</strong>
+          <span class="field-hint">Add new items; update existing ones matched by ID</span>
+        </span>
+      </label>
+      <label class="radio-label">
+        <input type="radio" name="mode" value="replace">
+        <span>
+          <strong>Replace all</strong>
+          <span class="field-hint">Delete all current items and replace with the file contents</span>
+        </span>
+      </label>
+    </fieldset>
+  </div>
+
+  <div class="form-actions">
+    <button type="button" onclick="document.getElementById('modal').close()">Cancel</button>
+    <button type="submit" class="btn-primary">Import</button>
+  </div>
+</form>
+{{end}}

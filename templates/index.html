@@ -1,0 +1,38 @@
+{{template "base.html" .}}
+{{define "content"}}
+<div class="table-wrapper">
+  {{if .Items}}
+  <table>
+    <thead>
+      <tr>
+        <th class="col-name">Item</th>
+        <th>Purchase<br>Date</th>
+        <th>Purchase<br>Price</th>
+        <th>Final Activity<br>Date</th>
+        <th>Resale<br>Value</th>
+        <th>Addl.<br>Costs</th>
+        <th>Cost</th>
+        <th>Days<br>Active</th>
+        <th>Cost/Day</th>
+        <th>Months<br>Active</th>
+        <th>Cost/Month</th>
+        <th>Years<br>Active</th>
+        <th>Cost/Year</th>
+        <th>Proj.<br>Years</th>
+        <th>Proj.<br>Cost/Year</th>
+        <th class="col-actions">Actions</th>
+      </tr>
+    </thead>
+    <tbody id="items-table-body">
+      {{range .Items}}
+        {{template "item_row" .}}
+      {{end}}
+    </tbody>
+  </table>
+  {{else}}
+  <div class="empty-state">
+    <p>No items yet. Click <strong>+ Add Item</strong> to get started.</p>
+  </div>
+  {{end}}
+</div>
+{{end}}

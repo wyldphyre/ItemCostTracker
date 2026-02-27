@@ -1,0 +1,15 @@
+# Compiled binary
+itemcosttracker
+
+# Docker image export
+*.tar.gz
+
+# Runtime data
+data/items.json
+
+# Spreadsheet source files (personal data)
+*.xlsx
+~$*
+
+# macOS
+.DS_Store

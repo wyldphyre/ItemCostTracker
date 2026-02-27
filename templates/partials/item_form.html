@@ -1,0 +1,69 @@
+{{define "item_form"}}
+<form hx-{{.Method}}="{{.FormAction}}"
+      hx-target="#items-table-body"
+      hx-swap="innerHTML"
+      hx-on::after-request="if(event.detail.successful){document.getElementById('modal').close()}">
+
+  <div class="form-header">
+    <h2>{{if eq .Method "post"}}Add Item{{else}}Edit Item{{end}}</h2>
+    <button type="button" class="btn-close" onclick="document.getElementById('modal').close()">✕</button>
+  </div>
+
+  <div class="form-grid">
+    <label class="field-full">
+      Item Name
+      <input type="text" name="name" value="{{.Item.Name}}" required placeholder="e.g. MacBook Pro">
+    </label>
+
+    <label>
+      Purchase Date
+      <input type="date" name="purchase_date" value="{{formatDateInput .Item.PurchaseDate}}" required>
+    </label>
+
+    <label>
+      Purchase Price
+      <input type="number" name="purchase_price" step="0.01" min="0"
+             value="{{.Item.PurchasePrice}}" required placeholder="0.00">
+    </label>
+
+    <label>
+      Final Activity Date
+      <input type="date" name="final_activity_date" value="{{formatDateInputPtr .Item.FinalActivityDate}}">
+      <span class="field-hint">Leave blank if still in use</span>
+    </label>
+
+    <label>
+      Resale Value
+      <input type="number" name="resale_value" step="0.01" min="0"
+             value="{{.Item.ResaleValue}}" placeholder="0.00">
+    </label>
+
+    <label>
+      Projected Years of Use
+      <input type="number" name="projected_years" step="0.5" min="0"
+             value="{{.Item.ProjectedYears}}" placeholder="0">
+    </label>
+  </div>
+
+  <fieldset>
+    <legend>Additional Costs</legend>
+    <div id="cost-rows">
+      {{range $i, $cost := .Item.AdditionalCosts}}
+        {{template "cost_row" dict "Index" $i "Cost" $cost}}
+      {{end}}
+    </div>
+    <button type="button" class="btn-add-cost"
+            hx-post="/items/cost-row"
+            hx-target="#cost-rows"
+            hx-swap="beforeend"
+            hx-vals='js:{index: document.querySelectorAll(".cost-row").length}'>
+      + Add Cost
+    </button>
+  </fieldset>
+
+  <div class="form-actions">
+    <button type="button" onclick="document.getElementById('modal').close()">Cancel</button>
+    <button type="submit" class="btn-primary">Save Item</button>
+  </div>
+</form>
+{{end}}

@@ -1,0 +1,32 @@
+{{define "item_row"}}
+<tr id="item-row-{{.ID}}" class="{{if .Calc.IsActive}}active{{end}}">
+  <td class="col-name">{{.Name}}</td>
+  <td>{{formatDate .PurchaseDate}}</td>
+  <td>{{formatCurrency .PurchasePrice}}</td>
+  <td>{{if .Calc.IsActive}}<span class="badge-active">Active</span>{{else}}{{formatDatePtr .FinalActivityDate}}{{end}}</td>
+  <td>{{formatCurrencyOpt .ResaleValue}}</td>
+  <td>{{formatCurrencyOpt .Calc.AdditionalCostsTotal}}</td>
+  <td>{{formatCurrency .Calc.Cost}}</td>
+  <td>{{formatDecimal 1 .Calc.DaysActive}}</td>
+  <td>{{formatCurrency .Calc.CostPerDay}}</td>
+  <td>{{formatDecimal 1 .Calc.MonthsActive}}</td>
+  <td>{{formatCurrency .Calc.CostPerMonth}}</td>
+  <td>{{formatDecimal 2 .Calc.YearsActive}}</td>
+  <td>{{formatCurrency .Calc.CostPerYear}}</td>
+  <td {{if .Calc.ProjectedYearsReached}}class="proj-reached"{{end}}>{{formatDecimal 1 .ProjectedYears}}</td>
+  <td>{{formatCurrency .Calc.ProjectedCostPerYear}}</td>
+  <td class="col-actions">
+    <div id="actions-{{.ID}}" class="action-btns">
+      <button class="btn-sm"
+              hx-get="/items/{{.ID}}/edit"
+              hx-target="#modal-content"
+              hx-swap="innerHTML"
+              hx-on::after-request="document.getElementById('modal').showModal()">Edit</button>
+      <button class="btn-sm btn-danger"
+              hx-get="/items/{{.ID}}/confirm-delete"
+              hx-target="#actions-{{.ID}}"
+              hx-swap="innerHTML">Delete</button>
+    </div>
+  </td>
+</tr>
+{{end}}
