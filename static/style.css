@@ -181,6 +181,20 @@ th {
 
 th.col-name, th.col-actions { text-align: left; }
 
+/* Sticky first column — sticks to left edge during horizontal scroll */
+th.col-name {
+  position: sticky;
+  left: 0;
+  z-index: 6; /* above other th (z-index:5) so the corner cell sits on top */
+  box-shadow: 2px 0 4px rgba(0,0,0,0.06);
+}
+td.col-name {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  box-shadow: 2px 0 4px rgba(0,0,0,0.06);
+}
+
 td {
   background: var(--surface);
   padding: 0.5rem 0.75rem;
