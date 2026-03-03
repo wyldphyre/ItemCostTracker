@@ -144,3 +144,23 @@ templates/           HTML templates (embedded in binary)
 ## Data file
 
 Items are stored in `data/items.json` as a JSON array. The file is created automatically on first write. You can back it up, edit it directly, or restore it via the Import feature.
+
+## Backup (Windows)
+
+`backup.ps1` creates compressed backups of `items.json` with daily/weekly/monthly rotation.
+
+```powershell
+# Basic usage — backs up to .\backups\ by default
+.\backup.ps1
+
+# Specify a backup destination (e.g. a NAS share)
+.\backup.ps1 -BackupDir "Z:\Backups\ItemCostTracker"
+.\backup.ps1 -BackupDir "\\nas\backups\itemcosttracker"
+
+# Custom retention
+.\backup.ps1 -BackupDir "Z:\Backups\ItemCostTracker" -DailyKeep 14 -WeeklyKeep 8 -MonthlyKeep 24
+```
+
+Backups are placed in `daily\`, `weekly\`, and `monthly\` subdirectories under the backup destination. Weekly backups are created on Sundays, monthly on the 1st of each month. Old backups beyond the retention limits are pruned automatically.
+
+To restore, extract the zip and copy `items.json` back to the `data\` directory (or use the Import feature in the web UI).
