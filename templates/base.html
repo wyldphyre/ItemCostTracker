@@ -11,6 +11,7 @@
   <header>
     <h1>Item Cost Tracker</h1>
     <div class="header-actions">
+      <button id="btn-filter-active" onclick="toggleActiveFilter()">Active only</button>
       <button hx-get="/import"
               hx-target="#modal-content"
               hx-swap="innerHTML"
@@ -36,5 +37,21 @@
   <dialog id="modal">
     <div id="modal-content"></div>
   </dialog>
+<script>
+  function applyActiveFilter() {
+    const on = document.getElementById('btn-filter-active').classList.contains('filter-on');
+    document.querySelectorAll('#items-table-body tr:not(.active)').forEach(function(row) {
+      row.style.display = on ? 'none' : '';
+    });
+  }
+  function toggleActiveFilter() {
+    document.getElementById('btn-filter-active').classList.toggle('filter-on');
+    applyActiveFilter();
+  }
+  // Reapply filter after HTMX re-renders the table body
+  document.addEventListener('htmx:afterSettle', function(e) {
+    if (e.target.id === 'items-table-body') applyActiveFilter();
+  });
+</script>
 </body>
 </html>

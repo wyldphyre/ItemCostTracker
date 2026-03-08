@@ -2,7 +2,7 @@
 <form hx-{{.Method}}="{{.FormAction}}"
       hx-target="#items-table-body"
       hx-swap="innerHTML"
-      hx-on::after-request="if(event.detail.successful){document.getElementById('modal').close()}">
+      hx-on::after-request="if(event.detail.successful && event.target === this){document.getElementById('modal').close()}">
 
   <div class="form-header">
     <h2>{{if eq .Method "post"}}Add Item{{else}}Edit Item{{end}}</h2>

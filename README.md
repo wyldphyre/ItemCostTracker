@@ -14,6 +14,7 @@ Replaces a personal Excel spreadsheet. Key improvement: multiple labelled additi
 - Highlights items that have reached or exceeded their projected lifetime
 - Export all data as JSON (re-importable) or CSV
 - Import JSON — merge with existing data or replace all
+- Filter to show active items only
 
 ## Stack
 
@@ -93,6 +94,14 @@ docker load -i itemcosttracker.tar.gz
 docker compose up -d
 ```
 
+On Windows, `deploy.ps1` automates steps 2–3 (down, load, up):
+
+```powershell
+.\deploy.ps1
+# or if the archive is elsewhere:
+.\deploy.ps1 -ImageFile "C:\Downloads\itemcosttracker.tar.gz"
+```
+
 Data is stored in `./data/items.json` relative to `compose.yaml` and persists across restarts.
 
 #### Windows + Docker Desktop (WSL2) — external access
@@ -139,6 +148,9 @@ internal/
   store/             JSON persistence with RWMutex and atomic writes
 static/              CSS (embedded in binary)
 templates/           HTML templates (embedded in binary)
+backup.ps1           Windows backup script (daily/weekly/monthly rotation)
+build-image.sh       Builds Docker image and exports itemcosttracker.tar.gz
+deploy.ps1           Windows deploy script (load image + restart container)
 ```
 
 ## Data file

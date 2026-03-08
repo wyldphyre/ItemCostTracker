@@ -108,6 +108,13 @@ button:hover { background: var(--bg); }
 }
 .btn-danger:hover { background: #fee2e2; }
 
+.filter-on {
+  background: var(--active-bg);
+  color: var(--active-text);
+  border-color: var(--active-color);
+}
+.filter-on:hover { background: #a7f3d0; }
+
 .btn-close {
   border: none;
   background: none;
