@@ -439,6 +439,91 @@ code {
 }
 
 /* ── Responsive ──────────────────────────────────────────────────────── */
+
+/* Medium: hide per-period breakdown (Days/Months active, Cost/Day, Cost/Month) */
+@media (max-width: 1100px) {
+  .col-days, .col-cost-day, .col-months, .col-cost-month { display: none; }
+}
+
+/* Small: also hide input fields and projections — core columns only */
+@media (max-width: 800px) {
+  .col-purchase-price, .col-resale, .col-addl-costs,
+  .col-proj-years, .col-proj-cost-year { display: none; }
+}
+
+/* Mobile: switch to card layout */
+@media (max-width: 600px) {
+  .hide-mobile { display: none; }
+
+  .table-wrapper { padding: 0 0.5rem; }
+
+  /* Dissolve the table structure */
+  table {
+    border: none;
+    background: transparent;
+    border-radius: 0;
+    white-space: normal;
+  }
+  thead { display: none; }
+
+  /* Each row becomes a card */
+  tbody tr {
+    display: block;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    margin-bottom: 0.75rem;
+    overflow: hidden;
+  }
+  tbody tr:last-child { margin-bottom: 0; }
+
+  /* Active card: border on the card itself instead of first cell */
+  tbody tr.active { border-left: 3px solid var(--active-color); }
+  tbody tr.active td:first-child {
+    border-left: none;
+    padding-left: 0.75rem;
+  }
+
+  /* Each cell becomes a label/value row */
+  td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.375rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    text-align: right;
+    white-space: normal;
+    background: var(--surface) !important; /* suppress hover flash on touch */
+  }
+  /* Restore borders within last card (overrides the global last-child rule) */
+  tbody tr:last-child td { border-bottom: 1px solid var(--border); }
+  tbody tr:last-child td:last-child,
+  td:last-child { border-bottom: none; }
+
+  /* Label injected from data-label attribute */
+  td[data-label]::before {
+    content: attr(data-label);
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-align: left;
+    flex-shrink: 0;
+    padding-right: 1rem;
+  }
+
+  /* Item name: card header */
+  td.col-name {
+    position: static;   /* disable horizontal sticky */
+    box-shadow: none;
+    max-width: none;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    border-bottom: 2px solid var(--border);
+  }
+
+  td.col-actions { justify-content: flex-end; }
+}
+
 @media (max-width: 480px) {
   .form-grid { grid-template-columns: 1fr; }
   label.field-full { grid-column: 1; }

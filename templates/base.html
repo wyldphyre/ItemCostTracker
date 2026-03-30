@@ -18,8 +18,8 @@
               hx-on::after-request="document.getElementById('modal').showModal()">
         Import
       </button>
-      <a href="/export/json" class="btn">Export JSON</a>
-      <a href="/export/csv" class="btn">Export CSV</a>
+      <a href="/export/json" class="btn hide-mobile">Export JSON</a>
+      <a href="/export/csv" class="btn hide-mobile">Export CSV</a>
       <button class="btn-primary"
               hx-get="/items/new"
               hx-target="#modal-content"

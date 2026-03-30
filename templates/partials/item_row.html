@@ -1,20 +1,20 @@
 {{define "item_row"}}
 <tr id="item-row-{{.ID}}" class="{{if .Calc.IsActive}}active{{end}}">
   <td class="col-name">{{.Name}}</td>
-  <td>{{formatDate .PurchaseDate}}</td>
-  <td>{{formatCurrency .PurchasePrice}}</td>
-  <td>{{if .Calc.IsActive}}<span class="badge-active">Active</span>{{else}}{{formatDatePtr .FinalActivityDate}}{{end}}</td>
-  <td>{{formatCurrencyOpt .ResaleValue}}</td>
-  <td>{{formatCurrencyOpt .Calc.AdditionalCostsTotal}}</td>
-  <td>{{formatCurrency .Calc.Cost}}</td>
-  <td>{{formatDecimal 1 .Calc.DaysActive}}</td>
-  <td>{{formatCurrency .Calc.CostPerDay}}</td>
-  <td>{{formatDecimal 1 .Calc.MonthsActive}}</td>
-  <td>{{formatCurrency .Calc.CostPerMonth}}</td>
-  <td>{{formatDecimal 2 .Calc.YearsActive}}</td>
-  <td>{{formatCurrency .Calc.CostPerYear}}</td>
-  <td {{if .Calc.ProjectedYearsReached}}class="proj-reached"{{end}}>{{formatDecimal 1 .ProjectedYears}}</td>
-  <td>{{formatCurrency .Calc.ProjectedCostPerYear}}</td>
+  <td class="col-purchase-date" data-label="Purchase Date">{{formatDate .PurchaseDate}}</td>
+  <td class="col-purchase-price" data-label="Purchase Price">{{formatCurrency .PurchasePrice}}</td>
+  <td class="col-final-date" data-label="Activity Date">{{if .Calc.IsActive}}<span class="badge-active">Active</span>{{else}}{{formatDatePtr .FinalActivityDate}}{{end}}</td>
+  <td class="col-resale" data-label="Resale Value">{{formatCurrencyOpt .ResaleValue}}</td>
+  <td class="col-addl-costs" data-label="Addl. Costs">{{formatCurrencyOpt .Calc.AdditionalCostsTotal}}</td>
+  <td class="col-cost" data-label="Cost">{{formatCurrency .Calc.Cost}}</td>
+  <td class="col-days" data-label="Days Active">{{formatDecimal 1 .Calc.DaysActive}}</td>
+  <td class="col-cost-day" data-label="Cost/Day">{{formatCurrency .Calc.CostPerDay}}</td>
+  <td class="col-months" data-label="Months Active">{{formatDecimal 1 .Calc.MonthsActive}}</td>
+  <td class="col-cost-month" data-label="Cost/Month">{{formatCurrency .Calc.CostPerMonth}}</td>
+  <td class="col-years" data-label="Years Active">{{formatDecimal 2 .Calc.YearsActive}}</td>
+  <td class="col-cost-year" data-label="Cost/Year">{{formatCurrency .Calc.CostPerYear}}</td>
+  <td class="col-proj-years{{if .Calc.ProjectedYearsReached}} proj-reached{{end}}" data-label="Proj. Years">{{formatDecimal 1 .ProjectedYears}}</td>
+  <td class="col-proj-cost-year" data-label="Proj. Cost/Year">{{formatCurrency .Calc.ProjectedCostPerYear}}</td>
   <td class="col-actions">
     <div id="actions-{{.ID}}" class="action-btns">
       <button class="btn-sm"
