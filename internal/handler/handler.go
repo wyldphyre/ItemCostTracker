@@ -17,9 +17,9 @@ type Handler struct {
 }
 
 // New creates a Handler and parses all templates from the given filesystem.
-func New(s *store.Store, templateFS fs.FS) (*Handler, error) {
+func New(s *store.Store, templateFS fs.FS, version string) (*Handler, error) {
 	tmpl, err := template.New("").
-		Funcs(templateFuncs()).
+		Funcs(templateFuncs(version)).
 		ParseFS(templateFS,
 			"templates/base.html",
 			"templates/index.html",

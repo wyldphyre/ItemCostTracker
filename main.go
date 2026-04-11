@@ -14,6 +14,8 @@ import (
 //go:embed templates static
 var embeddedFS embed.FS
 
+const version = "1.0.0"
+
 func main() {
 	dataDir := os.Getenv("DATA_DIR")
 	if dataDir == "" {
@@ -37,7 +39,7 @@ func main() {
 		log.Fatalf("failed to create static FS: %v", err)
 	}
 
-	h, err := handler.New(s, templateFS)
+	h, err := handler.New(s, templateFS, version)
 	if err != nil {
 		log.Fatalf("failed to initialize handlers: %v", err)
 	}

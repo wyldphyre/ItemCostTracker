@@ -9,7 +9,9 @@
 </head>
 <body>
   <header>
-    <h1>Item Cost Tracker</h1>
+    <h1>Item Cost Tracker <span class="version">v{{version}}</span></h1>
+    <input type="search" id="search-input" placeholder="Search items…" autocomplete="off"
+           oninput="applyFilters()">
     <div class="header-actions">
       <button id="btn-filter-active" onclick="toggleActiveFilter()">Active only</button>
       <button hx-get="/import"
@@ -38,19 +40,23 @@
     <div id="modal-content"></div>
   </dialog>
 <script>
-  function applyActiveFilter() {
-    const on = document.getElementById('btn-filter-active').classList.contains('filter-on');
-    document.querySelectorAll('#items-table-body tr:not(.active)').forEach(function(row) {
-      row.style.display = on ? 'none' : '';
+  function applyFilters() {
+    const activeOnly = document.getElementById('btn-filter-active').classList.contains('filter-on');
+    const query = document.getElementById('search-input').value.trim().toLowerCase();
+    document.querySelectorAll('#items-table-body tr').forEach(function(row) {
+      const name = row.querySelector('.col-name');
+      const matchesSearch = !query || (name && name.textContent.trim().toLowerCase().includes(query));
+      const matchesFilter = !activeOnly || row.classList.contains('active');
+      row.style.display = (matchesSearch && matchesFilter) ? '' : 'none';
     });
   }
   function toggleActiveFilter() {
     document.getElementById('btn-filter-active').classList.toggle('filter-on');
-    applyActiveFilter();
+    applyFilters();
   }
-  // Reapply filter after HTMX re-renders the table body
+  // Reapply both filters after HTMX re-renders the table body
   document.addEventListener('htmx:afterSettle', function(e) {
-    if (e.target.id === 'items-table-body') applyActiveFilter();
+    if (e.target.id === 'items-table-body') applyFilters();
   });
 </script>
 </body>

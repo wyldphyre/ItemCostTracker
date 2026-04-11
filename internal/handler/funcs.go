@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func templateFuncs() template.FuncMap {
+func templateFuncs(version string) template.FuncMap {
 	return template.FuncMap{
 		"formatDate": func(t time.Time) string {
 			if t.IsZero() {
@@ -61,6 +61,7 @@ func templateFuncs() template.FuncMap {
 			}
 			return m, nil
 		},
-		"lower": strings.ToLower,
+		"lower":   strings.ToLower,
+		"version": func() string { return version },
 	}
 }
