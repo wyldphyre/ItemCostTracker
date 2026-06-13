@@ -18,6 +18,8 @@ type Item struct {
 	ResaleValue       float64          `json:"resale_value"`
 	AdditionalCosts   []AdditionalCost `json:"additional_costs"`
 	ProjectedYears    float64          `json:"projected_years"`
+	EstimatedUseCount float64          `json:"estimated_use_count"` // uses per period; 0 = unset
+	UsagePeriod       string           `json:"usage_period"`        // "", "daily", "weekly", "monthly", "yearly"
 	CreatedAt         time.Time        `json:"created_at"`
 	UpdatedAt         time.Time        `json:"updated_at"`
 }
@@ -36,6 +38,9 @@ type Calculated struct {
 	CostPerYear             float64
 	ProjectedCostPerYear    float64
 	ProjectedYearsReached   bool // true when YearsActive >= ProjectedYears
+	HasUsageData            bool
+	EstimatedUses           float64 // total estimated uses over the active duration
+	CostPerUse              float64
 }
 
 // Compute derives all calculated fields from the item's raw data.
@@ -77,6 +82,25 @@ func (item *Item) Compute() Calculated {
 			c.ProjectedCostPerYear = c.Cost / projYears
 		}
 		c.ProjectedYearsReached = c.YearsActive >= item.ProjectedYears
+	}
+
+	if item.EstimatedUseCount > 0 && item.UsagePeriod != "" {
+		c.HasUsageData = true
+		var periods float64
+		switch item.UsagePeriod {
+		case "daily":
+			periods = c.DaysActive
+		case "weekly":
+			periods = c.DaysActive / 7
+		case "monthly":
+			periods = c.MonthsActive
+		case "yearly":
+			periods = c.YearsActive
+		}
+		c.EstimatedUses = item.EstimatedUseCount * periods
+		if c.EstimatedUses > 0 {
+			c.CostPerUse = c.Cost / c.EstimatedUses
+		}
 	}
 
 	return c

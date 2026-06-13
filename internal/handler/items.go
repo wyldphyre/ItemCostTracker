@@ -158,6 +158,8 @@ func parseItemForm(r *http.Request) (model.Item, error) {
 	purchasePrice, _ := strconv.ParseFloat(r.FormValue("purchase_price"), 64)
 	resaleValue, _ := strconv.ParseFloat(r.FormValue("resale_value"), 64)
 	projectedYears, _ := strconv.ParseFloat(r.FormValue("projected_years"), 64)
+	estimatedUseCount, _ := strconv.ParseFloat(r.FormValue("estimated_use_count"), 64)
+	usagePeriod := r.FormValue("usage_period")
 
 	// Collect additional costs from array-style form fields
 	var additionalCosts []model.AdditionalCost
@@ -184,5 +186,7 @@ func parseItemForm(r *http.Request) (model.Item, error) {
 		ResaleValue:       resaleValue,
 		AdditionalCosts:   additionalCosts,
 		ProjectedYears:    projectedYears,
+		EstimatedUseCount: estimatedUseCount,
+		UsagePeriod:       usagePeriod,
 	}, nil
 }

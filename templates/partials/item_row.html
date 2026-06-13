@@ -15,6 +15,8 @@
   <td class="col-cost-year" data-label="Cost/Year">{{formatCurrency .Calc.CostPerYear}}</td>
   <td class="col-proj-years{{if .Calc.ProjectedYearsReached}} proj-reached{{end}}" data-label="Proj. Years">{{formatDecimal 1 .ProjectedYears}}</td>
   <td class="col-proj-cost-year" data-label="Proj. Cost/Year">{{formatCurrency .Calc.ProjectedCostPerYear}}</td>
+  <td class="col-est-uses" data-label="Est. Uses">{{if .Calc.HasUsageData}}{{formatDecimal 0 .Calc.EstimatedUses}}{{else}}-{{end}}</td>
+  <td class="col-cost-use" data-label="Cost/Use">{{if .Calc.HasUsageData}}{{formatCurrency .Calc.CostPerUse}}{{else}}-{{end}}</td>
   <td class="col-actions">
     <div id="actions-{{.ID}}" class="action-btns">
       <button class="btn-sm"

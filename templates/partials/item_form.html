@@ -9,6 +9,7 @@
     <button type="button" class="btn-close" onclick="document.getElementById('modal').close()">✕</button>
   </div>
 
+  <div class="form-body">
   <div class="form-grid">
     <label class="field-full">
       Item Name
@@ -43,6 +44,24 @@
       <input type="number" name="projected_years" step="0.5" min="0"
              value="{{.Item.ProjectedYears}}" placeholder="0">
     </label>
+
+    <label>
+      Estimated Use Count
+      <input type="number" name="estimated_use_count" step="1" min="0"
+             value="{{.Item.EstimatedUseCount}}" placeholder="0">
+      <span class="field-hint">Uses per period — leave blank if not tracked</span>
+    </label>
+
+    <label>
+      Usage Period
+      <select name="usage_period">
+        <option value="">—</option>
+        <option value="daily"{{if eq .Item.UsagePeriod "daily"}} selected{{end}}>Daily</option>
+        <option value="weekly"{{if eq .Item.UsagePeriod "weekly"}} selected{{end}}>Weekly</option>
+        <option value="monthly"{{if eq .Item.UsagePeriod "monthly"}} selected{{end}}>Monthly</option>
+        <option value="yearly"{{if eq .Item.UsagePeriod "yearly"}} selected{{end}}>Yearly</option>
+      </select>
+    </label>
   </div>
 
   <fieldset>
@@ -60,6 +79,7 @@
       + Add Cost
     </button>
   </fieldset>
+  </div>
 
   <div class="form-actions">
     <button type="button" onclick="document.getElementById('modal').close()">Cancel</button>
