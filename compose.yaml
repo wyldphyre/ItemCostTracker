@@ -1,7 +1,6 @@
 services:
   itemcosttracker:
     image: itemcosttracker
-    build: .
     restart: unless-stopped
     ports:
       - "5010:8080"

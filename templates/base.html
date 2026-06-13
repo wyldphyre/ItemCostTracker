@@ -11,8 +11,7 @@
   <header>
     <h1>Item Cost Tracker <span class="version">v{{version}}</span></h1>
     <input type="search" id="search-input" placeholder="Search items…" autocomplete="off"
-           oninput="applyFilters()"
-           onkeydown="if(event.key==='Escape'){event.preventDefault();this.value='';applyFilters();}">
+           oninput="applyFilters()" onkeydown="handleSearchKeydown(event)">
     <div class="header-actions">
       <button id="btn-filter-active" onclick="toggleActiveFilter()">Active only</button>
       <button hx-get="/import"
@@ -41,6 +40,19 @@
     <div id="modal-content"></div>
   </dialog>
 <script>
+  function handleSearchKeydown(e) {
+    if (e.key !== 'Escape') return;
+    // Clear and re-filter ourselves. preventDefault stops the native clear,
+    // but some browsers (e.g. Vivaldi) still blur the search field on Escape
+    // at the browser level — re-assert focus on the next frame, after the
+    // browser has had its turn, so the field stays focused.
+    e.preventDefault();
+    e.stopPropagation();
+    const input = e.currentTarget;
+    input.value = '';
+    applyFilters();
+    requestAnimationFrame(function () { input.focus(); });
+  }
   function applyFilters() {
     const activeOnly = document.getElementById('btn-filter-active').classList.contains('filter-on');
     const query = document.getElementById('search-input').value.trim().toLowerCase();

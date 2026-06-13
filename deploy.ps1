@@ -40,11 +40,23 @@ docker compose down
 
 # Load new image
 Write-Host "Loading image..." -ForegroundColor Yellow
-docker load -i $ImageFile
+$loadOutput = docker load -i $ImageFile
+$loadOutput | ForEach-Object { Write-Host "  $_" }
 
-# Start container
+# Verify the load actually produced the expected image tag. If it didn't,
+# `docker compose up` would silently fall back to `build: .` and compile from
+# the server's (possibly stale) source tree, deploying old code.
+if (-not ($loadOutput -match "Loaded image: itemcosttracker")) {
+    Write-Host "ERROR: docker load did not produce the 'itemcosttracker' image." -ForegroundColor Red
+    Write-Host "       Aborting so we don't run a stale server-built image." -ForegroundColor Red
+    exit 1
+}
+
+# Start container.
+#   --no-build      : never rebuild from server source; only run the loaded image
+#   --force-recreate: recreate the container even if compose thinks it's unchanged
 Write-Host "Starting container..." -ForegroundColor Yellow
-docker compose up -d
+docker compose up -d --force-recreate --no-build
 
 Write-Host ""
 Write-Host "Deploy complete!" -ForegroundColor Green
