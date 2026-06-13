@@ -11,7 +11,8 @@
   <header>
     <h1>Item Cost Tracker <span class="version">v{{version}}</span></h1>
     <input type="search" id="search-input" placeholder="Search items…" autocomplete="off"
-           oninput="applyFilters()">
+           oninput="applyFilters()"
+           onkeydown="if(event.key==='Escape'){event.preventDefault();this.value='';applyFilters();}">
     <div class="header-actions">
       <button id="btn-filter-active" onclick="toggleActiveFilter()">Active only</button>
       <button hx-get="/import"
