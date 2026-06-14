@@ -14,7 +14,7 @@ import (
 //go:embed templates static
 var embeddedFS embed.FS
 
-const version = "1.1.0"
+const version = "1.2.0"
 
 func main() {
 	dataDir := os.Getenv("DATA_DIR")

@@ -1,22 +1,38 @@
 {{define "item_row"}}
 <tr id="item-row-{{.ID}}" class="{{if .Calc.IsActive}}active{{end}}">
   <td class="col-name">{{.Name}}</td>
-  <td class="col-purchase-date" data-label="Purchase Date">{{formatDate .PurchaseDate}}</td>
-  <td class="col-purchase-price" data-label="Purchase Price">{{formatCurrency .PurchasePrice}}</td>
-  <td class="col-final-date" data-label="Activity Date">{{if .Calc.IsActive}}<span class="badge-active">Active</span>{{else}}{{formatDatePtr .FinalActivityDate}}{{end}}</td>
-  <td class="col-resale" data-label="Resale Value">{{formatCurrencyOpt .ResaleValue}}</td>
-  <td class="col-addl-costs" data-label="Addl. Costs">{{formatCurrencyOpt .Calc.AdditionalCostsTotal}}</td>
-  <td class="col-cost" data-label="Cost">{{formatCurrency .Calc.Cost}}</td>
-  <td class="col-days" data-label="Days Active">{{formatDecimal 1 .Calc.DaysActive}}</td>
-  <td class="col-cost-day" data-label="Cost/Day">{{formatCurrency .Calc.CostPerDay}}</td>
-  <td class="col-months" data-label="Months Active">{{formatDecimal 1 .Calc.MonthsActive}}</td>
-  <td class="col-cost-month" data-label="Cost/Month">{{formatCurrency .Calc.CostPerMonth}}</td>
-  <td class="col-years" data-label="Years Active">{{formatDecimal 2 .Calc.YearsActive}}</td>
-  <td class="col-cost-year" data-label="Cost/Year">{{formatCurrency .Calc.CostPerYear}}</td>
-  <td class="col-proj-years{{if .Calc.ProjectedYearsReached}} proj-reached{{end}}" data-label="Proj. Years">{{formatDecimal 1 .ProjectedYears}}</td>
-  <td class="col-proj-cost-year" data-label="Proj. Cost/Year">{{formatCurrency .Calc.ProjectedCostPerYear}}</td>
-  <td class="col-est-uses" data-label="Est. Uses">{{if .Calc.HasUsageData}}{{formatDecimal 0 .Calc.EstimatedUses}}{{else}}-{{end}}</td>
-  <td class="col-cost-use" data-label="Cost/Use">{{if .Calc.HasUsageData}}{{formatCurrency .Calc.CostPerUse}}{{else}}-{{end}}</td>
+
+  <td class="col-tile col-purchase-resale">
+    <div class="tile tile-3">
+      <div class="cell col-purchase-date"><span class="cl">Purchase Date</span><span class="cv">{{formatDate .PurchaseDate}}</span></div>
+      <div class="cell col-purchase-price"><span class="cl">Purchase Price</span><span class="cv">{{formatCurrency .PurchasePrice}}</span></div>
+      <div class="cell col-addl-costs"><span class="cl">Addl. Costs</span><span class="cv">{{formatCurrencyOpt .Calc.AdditionalCostsTotal}}</span></div>
+      <div class="cell col-final-date"><span class="cl">Final Activity Date</span><span class="cv">{{if .Calc.IsActive}}<span class="badge-active">Active</span>{{else}}{{formatDatePtr .FinalActivityDate}}{{end}}</span></div>
+      <div class="cell col-resale"><span class="cl">Resale Value</span><span class="cv">{{formatCurrencyOpt .ResaleValue}}</span></div>
+      <div class="cell col-cost"><span class="cl">Cost</span><span class="cv">{{formatCurrency .Calc.Cost}}</span></div>
+    </div>
+  </td>
+
+  <td class="col-tile col-cost-per">
+    <div class="tile tile-3">
+      <div class="cell col-days"><span class="cl">Days Active</span><span class="cv">{{formatDecimal 1 .Calc.DaysActive}}</span></div>
+      <div class="cell col-months"><span class="cl">Months Active</span><span class="cv">{{formatDecimal 1 .Calc.MonthsActive}}</span></div>
+      <div class="cell col-years"><span class="cl">Years Active</span><span class="cv">{{formatDecimal 2 .Calc.YearsActive}}</span></div>
+      <div class="cell col-cost-day"><span class="cl">Cost/Day</span><span class="cv">{{formatCurrency .Calc.CostPerDay}}</span></div>
+      <div class="cell col-cost-month"><span class="cl">Cost/Month</span><span class="cv">{{formatCurrency .Calc.CostPerMonth}}</span></div>
+      <div class="cell col-cost-year"><span class="cl">Cost/Year</span><span class="cv">{{formatCurrency .Calc.CostPerYear}}</span></div>
+    </div>
+  </td>
+
+  <td class="col-tile col-projected">
+    <div class="tile tile-2">
+      <div class="cell col-proj-years{{if .Calc.ProjectedYearsReached}} proj-reached{{end}}"><span class="cl">Proj. Years</span><span class="cv">{{formatDecimal 1 .ProjectedYears}}</span></div>
+      <div class="cell col-proj-cost-year"><span class="cl">Proj. Cost/Year</span><span class="cv">{{formatCurrency .Calc.ProjectedCostPerYear}}</span></div>
+      <div class="cell col-est-uses"><span class="cl">Est. Uses</span><span class="cv">{{if .Calc.HasUsageData}}{{formatDecimal 0 .Calc.EstimatedUses}}{{else}}-{{end}}</span></div>
+      <div class="cell col-cost-use"><span class="cl">Cost/Use</span><span class="cv">{{if .Calc.HasUsageData}}{{formatCurrency .Calc.CostPerUse}}{{else}}-{{end}}</span></div>
+    </div>
+  </td>
+
   <td class="col-actions">
     <div id="actions-{{.ID}}" class="action-btns">
       <button class="btn-sm"

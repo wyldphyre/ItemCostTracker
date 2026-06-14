@@ -261,7 +261,29 @@ tbody tr.active td:first-child {
   letter-spacing: 0.05em;
 }
 
-td.proj-reached {
+/* ── Combined column tiles ───────────────────────────────────────────── */
+/* Each grouped column renders as a small grid of label/value cells,
+   two data-rows tall. Desktop layout; the mobile card unwraps these below. */
+td.col-tile { vertical-align: top; text-align: left; }
+
+.tile {
+  display: grid;
+  gap: 0.4rem 1.5rem;
+}
+.tile-3 { grid-template-columns: repeat(3, max-content); }
+.tile-2 { grid-template-columns: repeat(2, max-content); }
+
+.cell { display: flex; flex-direction: column; gap: 0.1rem; min-width: 0; }
+.cell .cl {
+  font-size: 0.625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.cell .cv { font-size: 0.875rem; color: var(--text); }
+.cell.proj-reached .cv {
   color: var(--active-color);
   font-weight: 600;
 }
@@ -476,18 +498,8 @@ code {
 }
 
 /* ── Responsive ──────────────────────────────────────────────────────── */
-
-/* Medium: hide per-period breakdown (Days/Months active, Cost/Day, Cost/Month) */
-@media (max-width: 1100px) {
-  .col-days, .col-cost-day, .col-months, .col-cost-month { display: none; }
-}
-
-/* Small: also hide input fields and projections — core columns only */
-@media (max-width: 800px) {
-  .col-purchase-price, .col-resale, .col-addl-costs,
-  .col-proj-years, .col-proj-cost-year,
-  .col-est-uses, .col-cost-use { display: none; }
-}
+/* Desktop now uses combined tiles (above), so no per-column hiding is needed
+   between full width and the mobile breakpoint — everything fits in the tiles. */
 
 /* Mobile: switch to card layout */
 @media (max-width: 600px) {
@@ -521,6 +533,41 @@ code {
     white-space: normal;
   }
   thead { display: none; }
+
+  /* Tiles unwrap: the td/grid wrappers collapse so each cell flows as its
+     own label/value row, preserving the original card layout. */
+  td.col-tile {
+    display: block;
+    padding: 0;
+    border-bottom: none;
+    background: transparent !important;
+  }
+  .tile { display: block; }
+  .cell {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.375rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .cell .cl {
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+  .cell .cv { font-size: 0.875rem; text-align: right; }
+
+  /* Keep the mobile card to its original reduced field set */
+  .cell.col-purchase-price, .cell.col-resale, .cell.col-addl-costs,
+  .cell.col-days, .cell.col-cost-day, .cell.col-months, .cell.col-cost-month,
+  .cell.col-proj-years, .cell.col-proj-cost-year,
+  .cell.col-est-uses, .cell.col-cost-use { display: none; }
 
   /* Each row becomes a card */
   tbody tr {
