@@ -151,14 +151,15 @@ type sheetData struct {
 }
 
 type row struct {
-	R    int    `xml:"r,attr"`
+	R     int    `xml:"r,attr"`
 	Cells []cell `xml:"c"`
 }
 
 type cell struct {
-	R string `xml:"r,attr"` // e.g. "A2"
-	T string `xml:"t,attr"` // "s" = shared string, "" = number
-	V string `xml:"v"`
+	R  string  `xml:"r,attr"` // e.g. "A2"
+	T  string  `xml:"t,attr"` // "s" = shared string, "inlineStr" = <is>, "" = number
+	V  string  `xml:"v"`
+	Is *ssItem `xml:"is"` // populated when t="inlineStr"
 }
 
 func readSheet(r *zip.ReadCloser) ([]row, error) {
@@ -249,8 +250,8 @@ func convertRows(rows []row, sharedStrings []string) ([]model.Item, error) {
 			continue // skip empty rows
 		}
 
-		purchaseDate, err := cellDate(cells, colPurchaseDate)
-		if err != nil || purchaseDate.IsZero() {
+		purchaseDate := cellDate(cells, colPurchaseDate)
+		if purchaseDate.IsZero() {
 			log.Printf("Row %d: skipping %q — invalid purchase date", r.R, name)
 			continue
 		}
@@ -289,17 +290,28 @@ func convertRows(rows []row, sharedStrings []string) ([]model.Item, error) {
 
 func cellString(cells map[int]cell, col int, shared []string) string {
 	c, ok := cells[col]
-	if !ok || c.V == "" {
+	if !ok {
+		return ""
+	}
+	// Inline strings carry their text in <is> rather than <v>.
+	if c.T == "inlineStr" {
+		if c.Is == nil {
+			return ""
+		}
+		return strings.TrimSpace(c.Is.text())
+	}
+	if c.V == "" {
 		return ""
 	}
 	if c.T == "s" {
 		idx, err := strconv.Atoi(c.V)
-		if err != nil || idx >= len(shared) {
+		if err != nil || idx < 0 || idx >= len(shared) {
 			return ""
 		}
-		return shared[idx]
+		return strings.TrimSpace(shared[idx])
 	}
-	return c.V
+	// t="str" is a cached formula result; anything else is a literal.
+	return strings.TrimSpace(c.V)
 }
 
 func cellFloat(cells map[int]cell, col int) float64 {
@@ -314,12 +326,13 @@ func cellFloat(cells map[int]cell, col int) float64 {
 	return f
 }
 
-func cellDate(cells map[int]cell, col int) (time.Time, error) {
+// cellDate returns the zero time when the cell is empty or non-numeric.
+func cellDate(cells map[int]cell, col int) time.Time {
 	f := cellFloat(cells, col)
 	if f == 0 {
-		return time.Time{}, nil
+		return time.Time{}
 	}
-	return excelDateToTime(f), nil
+	return excelDateToTime(f)
 }
 
 func cellDatePtr(cells map[int]cell, col int) *time.Time {

@@ -64,14 +64,52 @@ func TestYearFrac_SameDay(t *testing.T) {
 }
 
 func TestYearFrac_EndOfMonth(t *testing.T) {
-	// Jan 31 to Feb 28: basis 0 treats Jan 31 as day 30 → 28 days / 360 = ~0.0778
+	// Jan 31 to Feb 28: basis 0 treats Jan 31 as day 30. Feb 28 is NOT rounded
+	// up, because the end-of-February collapse only applies when the START date
+	// is also the last day of February. days = 30*1 + (28-30) = 28 → 28/360.
 	start := date(2023, 1, 31)
 	end := date(2023, 2, 28)
 	got := YearFrac(start, end)
-	// Basis 0: d1=30, d2=30 (end of Feb when d1==30), days = 30*1+30-30 = 30 → 30/360
-	want := 30.0 / 360.0
+	want := 28.0 / 360.0
 	if !approxEqual(got, want, 0.0001) {
 		t.Errorf("YearFrac end-of-month = %.6f, want %.6f", got, want)
+	}
+}
+
+// The four documented Excel basis-0 day adjustments, each exercised directly.
+func TestYearFrac_ExcelBasis0Rules(t *testing.T) {
+	tests := []struct {
+		name       string
+		start, end time.Time
+		want       float64
+	}{
+		// Rule 1: both dates are the last day of February → d2 = 30, d1 = 30.
+		{"both last day of Feb", date(2022, 2, 28), date(2023, 2, 28), 360.0 / 360},
+		{"both last day of Feb, leap end", date(2023, 2, 28), date(2024, 2, 29), 360.0 / 360},
+		// Rule 2 alone: start is last day of Feb, end is an ordinary day.
+		{"start last day of Feb", date(2023, 2, 28), date(2023, 6, 15), 105.0 / 360},
+		// Rule 3: d2 == 31 with d1 of 30 or 31 → d2 = 30.
+		{"Jan 31 to Mar 31", date(2023, 1, 31), date(2023, 3, 31), 60.0 / 360},
+		{"Apr 30 to Dec 31", date(2023, 4, 30), date(2023, 12, 31), 240.0 / 360},
+		// Rule 3 does NOT fire when d1 is an ordinary day.
+		{"Jan 15 to Mar 31", date(2023, 1, 15), date(2023, 3, 31), 76.0 / 360},
+		// Rule 4 alone: start is the 31st, end is an ordinary day.
+		{"Jan 31 to Feb 28", date(2023, 1, 31), date(2023, 2, 28), 28.0 / 360},
+		{"Jan 31 to Feb 29 leap", date(2024, 1, 31), date(2024, 2, 29), 29.0 / 360},
+		{"Mar 31 to Feb 28 next year", date(2022, 3, 31), date(2023, 2, 28), 328.0 / 360},
+		// An end date that merely ends a 30-day month is already day 30.
+		{"Jan 31 to Apr 30", date(2023, 1, 31), date(2023, 4, 30), 90.0 / 360},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := YearFrac(tt.start, tt.end)
+			if !approxEqual(got, tt.want, 1e-9) {
+				t.Errorf("YearFrac(%s, %s) = %.6f, want %.6f (off by %.1f days)",
+					tt.start.Format("2006-01-02"), tt.end.Format("2006-01-02"),
+					got, tt.want, (got-tt.want)*360)
+			}
+		})
 	}
 }
 

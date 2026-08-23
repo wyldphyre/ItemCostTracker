@@ -1,7 +1,6 @@
 {{template "base.html" .}}
 {{define "content"}}
 <div class="table-wrapper">
-  {{if .Items}}
   <table>
     <thead>
       <tr>
@@ -12,16 +11,16 @@
         <th class="col-actions">Actions</th>
       </tr>
     </thead>
+    <!-- The tbody is always rendered, even when empty: every mutating form
+         targets #items-table-body, so the element must exist for HTMX to
+         resolve its target. -->
     <tbody id="items-table-body">
       {{range .Items}}
         {{template "item_row" .}}
+      {{else}}
+        {{template "empty_row"}}
       {{end}}
     </tbody>
   </table>
-  {{else}}
-  <div class="empty-state">
-    <p>No items yet. Click <strong>+ Add Item</strong> to get started.</p>
-  </div>
-  {{end}}
 </div>
 {{end}}

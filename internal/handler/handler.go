@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"bytes"
 	"html/template"
 	"io/fs"
 	"log"
@@ -24,6 +25,7 @@ func New(s *store.Store, templateFS fs.FS, version string) (*Handler, error) {
 			"templates/base.html",
 			"templates/index.html",
 			"templates/partials/item_row.html",
+			"templates/partials/empty_row.html",
 			"templates/partials/item_form.html",
 			"templates/partials/cost_row.html",
 			"templates/partials/confirm_delete.html",
@@ -53,27 +55,42 @@ func (h *Handler) Register(mux *http.ServeMux, staticFS fs.FS) {
 	mux.Handle("GET /static/", http.StripPrefix("/static/", http.FileServerFS(staticFS)))
 }
 
-// render executes a named template with the given data.
+// render executes a named template with the given data. The output is buffered
+// so a mid-template failure produces a clean 500 rather than a half-written body.
 func (h *Handler) render(w http.ResponseWriter, name string, data any) {
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	if err := h.templates.ExecuteTemplate(w, name, data); err != nil {
+	var buf bytes.Buffer
+	if err := h.templates.ExecuteTemplate(&buf, name, data); err != nil {
 		log.Printf("template error (%s): %v", name, err)
 		http.Error(w, "internal error", http.StatusInternalServerError)
+		return
 	}
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.Write(buf.Bytes())
 }
 
 // renderTableBody re-renders the full table body (used after any mutation).
+// With no items it emits the empty-state row, so deleting the last item leaves
+// the same markup a fresh page load would produce.
 func (h *Handler) renderTableBody(w http.ResponseWriter) {
 	items := h.store.All()
-	withCalc := make([]model.ItemWithCalc, len(items))
-	for i, item := range items {
-		withCalc[i] = model.ItemWithCalc{Item: item, Calc: item.Compute()}
-	}
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	for _, item := range withCalc {
-		if err := h.templates.ExecuteTemplate(w, "item_row", item); err != nil {
-			log.Printf("template error (item_row): %v", err)
+
+	var buf bytes.Buffer
+	if len(items) == 0 {
+		if err := h.templates.ExecuteTemplate(&buf, "empty_row", nil); err != nil {
+			log.Printf("template error (empty_row): %v", err)
+			http.Error(w, "internal error", http.StatusInternalServerError)
 			return
 		}
 	}
+	for _, item := range items {
+		withCalc := model.ItemWithCalc{Item: item, Calc: item.Compute()}
+		if err := h.templates.ExecuteTemplate(&buf, "item_row", withCalc); err != nil {
+			log.Printf("template error (item_row): %v", err)
+			http.Error(w, "internal error", http.StatusInternalServerError)
+			return
+		}
+	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.Write(buf.Bytes())
 }

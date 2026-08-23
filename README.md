@@ -8,13 +8,15 @@ Replaces a personal Excel spreadsheet. Key improvement: multiple labelled additi
 
 - Add, edit, and delete items
 - Tracks purchase price, resale value, and multiple additional costs (each with a description and amount — can be negative for credits)
-- Calculates cost per day, month, and year using Excel-compatible YEARFRAC (US 30/360)
+- Calculates cost per day, month, and year using Excel-compatible YEARFRAC (US 30/360, basis 0)
 - Active items (no final date set) update their cost metrics daily using today as the end date
 - Projected years of use with projected cost/year
+- Cost per use — set a use count and a period (daily, weekly, monthly, yearly) to get estimated total uses and cost/use
 - Highlights items that have reached or exceeded their projected lifetime
-- Export all data as JSON (re-importable) or CSV
+- Export all data as JSON (re-importable) or CSV (includes all calculated fields)
 - Import JSON — merge with existing data or replace all
-- Filter to show active items only
+- Search items by name, and filter to show active items only
+- Runs fully offline — HTMX and all assets are embedded in the binary
 
 ## Stack
 
@@ -146,7 +148,7 @@ internal/
   handler/           HTTP handlers, template functions, import/export
   model/             Item struct, Calculated struct, Compute(), YearFrac()
   store/             JSON persistence with RWMutex and atomic writes
-static/              CSS (embedded in binary)
+static/              CSS + vendored htmx (embedded in binary)
 templates/           HTML templates (embedded in binary)
 backup.ps1           Windows backup script (daily/weekly/monthly rotation)
 build-image.sh       Builds Docker image and exports itemcosttracker.tar.gz

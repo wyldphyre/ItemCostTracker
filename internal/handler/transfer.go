@@ -50,6 +50,8 @@ func (h *Handler) exportCSV(w http.ResponseWriter, r *http.Request) {
 		"Resale Value",
 		"Additional Costs (JSON)",
 		"Projected Years",
+		"Estimated Use Count",
+		"Usage Period",
 		"Cost",
 		"Days Active",
 		"Cost/Day",
@@ -58,6 +60,8 @@ func (h *Handler) exportCSV(w http.ResponseWriter, r *http.Request) {
 		"Years Active",
 		"Cost/Year",
 		"Projected Cost/Year",
+		"Est. Uses",
+		"Cost/Use",
 	})
 
 	for _, item := range items {
@@ -74,6 +78,14 @@ func (h *Handler) exportCSV(w http.ResponseWriter, r *http.Request) {
 			acJSON = string(b)
 		}
 
+		// Usage columns stay blank rather than showing 0 when the item has no
+		// usage data, matching how the table renders them as "-".
+		estUses, costPerUse := "", ""
+		if c.HasUsageData {
+			estUses = fmt.Sprintf("%.1f", c.EstimatedUses)
+			costPerUse = fmt.Sprintf("%.4f", c.CostPerUse)
+		}
+
 		cw.Write([]string{
 			item.Name,
 			item.PurchaseDate.Format("2006-01-02"),
@@ -82,6 +94,8 @@ func (h *Handler) exportCSV(w http.ResponseWriter, r *http.Request) {
 			fmt.Sprintf("%.2f", item.ResaleValue),
 			acJSON,
 			fmt.Sprintf("%.4f", item.ProjectedYears),
+			fmt.Sprintf("%.4f", item.EstimatedUseCount),
+			item.UsagePeriod,
 			fmt.Sprintf("%.2f", c.Cost),
 			fmt.Sprintf("%.1f", c.DaysActive),
 			fmt.Sprintf("%.4f", c.CostPerDay),
@@ -90,6 +104,8 @@ func (h *Handler) exportCSV(w http.ResponseWriter, r *http.Request) {
 			fmt.Sprintf("%.4f", c.YearsActive),
 			fmt.Sprintf("%.4f", c.CostPerYear),
 			fmt.Sprintf("%.4f", c.ProjectedCostPerYear),
+			estUses,
+			costPerUse,
 		})
 	}
 	cw.Flush()

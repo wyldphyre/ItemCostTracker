@@ -26,21 +26,21 @@ type Item struct {
 
 // Calculated holds all derived fields, computed fresh on each request. Never stored.
 type Calculated struct {
-	AdditionalCostsTotal float64
-	Cost                 float64
-	EffectiveEndDate     time.Time
-	IsActive             bool
-	DaysActive           float64
-	MonthsActive         float64
-	YearsActive          float64
-	CostPerDay           float64
-	CostPerMonth         float64
-	CostPerYear             float64
-	ProjectedCostPerYear    float64
-	ProjectedYearsReached   bool // true when YearsActive >= ProjectedYears
-	HasUsageData            bool
-	EstimatedUses           float64 // total estimated uses over the active duration
-	CostPerUse              float64
+	AdditionalCostsTotal  float64
+	Cost                  float64
+	EffectiveEndDate      time.Time
+	IsActive              bool
+	DaysActive            float64
+	MonthsActive          float64
+	YearsActive           float64
+	CostPerDay            float64
+	CostPerMonth          float64
+	CostPerYear           float64
+	ProjectedCostPerYear  float64
+	ProjectedYearsReached bool // true when YearsActive >= ProjectedYears
+	HasUsageData          bool
+	EstimatedUses         float64 // total estimated uses over the active duration
+	CostPerUse            float64
 }
 
 // Compute derives all calculated fields from the item's raw data.

@@ -14,7 +14,7 @@ import (
 //go:embed templates static
 var embeddedFS embed.FS
 
-const version = "1.2.0"
+const version = "1.2.1"
 
 func main() {
 	dataDir := os.Getenv("DATA_DIR")
@@ -53,7 +53,7 @@ func main() {
 	}
 
 	log.Printf("ItemCostTracker listening on http://localhost%s", addr)
-	log.Fatal(http.ListenAndServe(addr, logRequests(mux)))
+	log.Fatal(http.ListenAndServe(addr, logRequests(handler.CheckOrigin(mux))))
 }
 
 func logRequests(next http.Handler) http.Handler {
