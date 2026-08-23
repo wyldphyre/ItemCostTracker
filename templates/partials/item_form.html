@@ -24,7 +24,7 @@
     <label>
       Purchase Price
       <input type="number" name="purchase_price" step="0.01" min="0"
-             value="{{.Item.PurchasePrice}}" required placeholder="0.00">
+             value="{{formatNumberInput .Item.PurchasePrice}}" required placeholder="0.00">
     </label>
 
     <label>
@@ -36,19 +36,19 @@
     <label>
       Resale Value
       <input type="number" name="resale_value" step="0.01" min="0"
-             value="{{.Item.ResaleValue}}" placeholder="0.00">
+             value="{{formatNumberInput .Item.ResaleValue}}" placeholder="0.00">
     </label>
 
     <label>
       Projected Years of Use
       <input type="number" name="projected_years" step="0.5" min="0"
-             value="{{.Item.ProjectedYears}}" placeholder="0">
+             value="{{formatNumberInput .Item.ProjectedYears}}" placeholder="0">
     </label>
 
     <label>
       Estimated Use Count
       <input type="number" name="estimated_use_count" step="1" min="0"
-             value="{{.Item.EstimatedUseCount}}" placeholder="0">
+             value="{{formatNumberInput .Item.EstimatedUseCount}}" placeholder="0">
       <span class="field-hint">Uses per period — leave blank if not tracked</span>
     </label>
 

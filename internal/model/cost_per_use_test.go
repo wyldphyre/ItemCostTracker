@@ -21,24 +21,24 @@ func TestCompute_CostPerUse(t *testing.T) {
 	tenWeeks := date(2024, 3, 11)
 
 	tests := []struct {
-		name          string
-		item          Item
-		wantHasUsage  bool
-		wantUses      float64
+		name           string
+		item           Item
+		wantHasUsage   bool
+		wantUses       float64
 		wantCostPerUse float64
 	}{
 		{
-			name:          "weekly rate",
-			item:          usageItem(2, "weekly", tenWeeks),
-			wantHasUsage:  true,
-			wantUses:      20, // 2/week * 10 weeks
-			wantCostPerUse: 5, // cost 100 / 20
+			name:           "weekly rate",
+			item:           usageItem(2, "weekly", tenWeeks),
+			wantHasUsage:   true,
+			wantUses:       20, // 2/week * 10 weeks
+			wantCostPerUse: 5,  // cost 100 / 20
 		},
 		{
-			name:          "daily rate",
-			item:          usageItem(1, "daily", tenWeeks),
-			wantHasUsage:  true,
-			wantUses:      70, // 1/day * 70 days
+			name:           "daily rate",
+			item:           usageItem(1, "daily", tenWeeks),
+			wantHasUsage:   true,
+			wantUses:       70, // 1/day * 70 days
 			wantCostPerUse: 100.0 / 70.0,
 		},
 		{

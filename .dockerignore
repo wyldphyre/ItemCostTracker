@@ -1,4 +1,7 @@
 .git
+.DS_Store
 data/items.json
+backups
 *.xlsx
+*.tar.gz
 itemcosttracker

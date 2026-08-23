@@ -4,10 +4,35 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"itemcosttracker/internal/model"
 )
+
+// validUsagePeriods are the only values Compute knows how to turn into a
+// number of periods. Anything else would silently yield zero estimated uses.
+var validUsagePeriods = map[string]bool{
+	"":        true,
+	"daily":   true,
+	"weekly":  true,
+	"monthly": true,
+	"yearly":  true,
+}
+
+// formFloat parses an optional numeric form field. A blank field is zero;
+// anything non-numeric is an error rather than a silent zero.
+func formFloat(r *http.Request, field string) (float64, error) {
+	v := strings.TrimSpace(r.FormValue(field))
+	if v == "" {
+		return 0, nil
+	}
+	f, err := strconv.ParseFloat(v, 64)
+	if err != nil {
+		return 0, fmt.Errorf("invalid %s: %q is not a number", field, v)
+	}
+	return f, nil
+}
 
 // listItems renders the full page with all items.
 func (h *Handler) listItems(w http.ResponseWriter, r *http.Request) {
@@ -155,11 +180,32 @@ func parseItemForm(r *http.Request) (model.Item, error) {
 		finalDate = &t
 	}
 
-	purchasePrice, _ := strconv.ParseFloat(r.FormValue("purchase_price"), 64)
-	resaleValue, _ := strconv.ParseFloat(r.FormValue("resale_value"), 64)
-	projectedYears, _ := strconv.ParseFloat(r.FormValue("projected_years"), 64)
-	estimatedUseCount, _ := strconv.ParseFloat(r.FormValue("estimated_use_count"), 64)
+	purchasePrice, err := formFloat(r, "purchase_price")
+	if err != nil {
+		return model.Item{}, err
+	}
+	resaleValue, err := formFloat(r, "resale_value")
+	if err != nil {
+		return model.Item{}, err
+	}
+	projectedYears, err := formFloat(r, "projected_years")
+	if err != nil {
+		return model.Item{}, err
+	}
+	estimatedUseCount, err := formFloat(r, "estimated_use_count")
+	if err != nil {
+		return model.Item{}, err
+	}
+
 	usagePeriod := r.FormValue("usage_period")
+	if !validUsagePeriods[usagePeriod] {
+		return model.Item{}, fmt.Errorf("invalid usage_period: %q", usagePeriod)
+	}
+
+	name := strings.TrimSpace(r.FormValue("name"))
+	if name == "" {
+		return model.Item{}, fmt.Errorf("name is required")
+	}
 
 	// Collect additional costs from array-style form fields
 	var additionalCosts []model.AdditionalCost
@@ -169,7 +215,10 @@ func parseItemForm(r *http.Request) (model.Item, error) {
 		if desc == "" && amtStr == "" {
 			break
 		}
-		amt, _ := strconv.ParseFloat(amtStr, 64)
+		amt, err := formFloat(r, fmt.Sprintf("additional_costs[%d][amount]", i))
+		if err != nil {
+			return model.Item{}, err
+		}
 		if desc != "" || amt != 0 {
 			additionalCosts = append(additionalCosts, model.AdditionalCost{
 				Description: desc,
@@ -179,7 +228,7 @@ func parseItemForm(r *http.Request) (model.Item, error) {
 	}
 
 	return model.Item{
-		Name:              r.FormValue("name"),
+		Name:              name,
 		PurchaseDate:      purchaseDate,
 		PurchasePrice:     purchasePrice,
 		FinalActivityDate: finalDate,

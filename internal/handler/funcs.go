@@ -3,6 +3,7 @@ package handler
 import (
 	"fmt"
 	"html/template"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -45,6 +46,16 @@ func templateFuncs(version string) template.FuncMap {
 		},
 		"formatDecimal": func(precision int, f float64) string {
 			return fmt.Sprintf("%.*f", precision, f)
+		},
+		// formatNumberInput renders a float for an <input type="number" value=...>.
+		// Zero becomes empty so the field's placeholder shows on a blank form, and
+		// 'f' formatting avoids the scientific notation %v would produce for large
+		// or small magnitudes (e.g. 1000000 rendering as "1e+06").
+		"formatNumberInput": func(f float64) string {
+			if f == 0 {
+				return ""
+			}
+			return strconv.FormatFloat(f, 'f', -1, 64)
 		},
 		// dict creates a map for passing multiple values to sub-templates
 		"dict": func(values ...any) (map[string]any, error) {
