@@ -9,3 +9,5 @@ services:
     environment:
       DATA_DIR: /data
       ADDR: :8080
+      # "Today" for active items is the calendar date in this zone.
+      TZ: Australia/Perth

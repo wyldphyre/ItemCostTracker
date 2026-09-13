@@ -21,15 +21,11 @@ type Handler struct {
 func New(s *store.Store, templateFS fs.FS, version string) (*Handler, error) {
 	tmpl, err := template.New("").
 		Funcs(templateFuncs(version)).
+		// Partials are globbed so a new partial can't be forgotten here.
 		ParseFS(templateFS,
 			"templates/base.html",
 			"templates/index.html",
-			"templates/partials/item_row.html",
-			"templates/partials/empty_row.html",
-			"templates/partials/item_form.html",
-			"templates/partials/cost_row.html",
-			"templates/partials/confirm_delete.html",
-			"templates/partials/import_form.html",
+			"templates/partials/*.html",
 		)
 	if err != nil {
 		return nil, err
@@ -47,7 +43,7 @@ func (h *Handler) Register(mux *http.ServeMux, staticFS fs.FS) {
 	mux.HandleFunc("DELETE /items/{id}", h.deleteItem)
 	mux.HandleFunc("GET /items/{id}/confirm-delete", h.confirmDelete)
 	mux.HandleFunc("GET /items/{id}/cancel-delete", h.cancelDelete)
-	mux.HandleFunc("POST /items/cost-row", h.addCostRow)
+	mux.HandleFunc("GET /items/cost-row", h.addCostRow)
 	mux.HandleFunc("GET /export/json", h.exportJSON)
 	mux.HandleFunc("GET /export/csv", h.exportCSV)
 	mux.HandleFunc("GET /import", h.importForm)

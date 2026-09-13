@@ -23,7 +23,8 @@ func (h *Handler) exportJSON(w http.ResponseWriter, r *http.Request) {
 	items := h.store.All()
 	data, err := json.MarshalIndent(ImportPayload{Items: items}, "", "  ")
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf("export JSON: %v", err)
+		http.Error(w, "Could not export data.", http.StatusInternalServerError)
 		return
 	}
 
@@ -167,7 +168,8 @@ func (h *Handler) importData(w http.ResponseWriter, r *http.Request) {
 	switch mode {
 	case "replace":
 		if err := h.store.ReplaceAll(payload.Items); err != nil {
-			h.renderImportError(w, "Import failed: "+err.Error())
+			log.Printf("import (replace): %v", err)
+			h.renderImportError(w, "Import failed: could not save the data. Nothing was changed.")
 			return
 		}
 		added = len(payload.Items)
@@ -175,7 +177,8 @@ func (h *Handler) importData(w http.ResponseWriter, r *http.Request) {
 		var mergeErr error
 		added, updated, mergeErr = h.store.Merge(payload.Items)
 		if mergeErr != nil {
-			h.renderImportError(w, "Import failed: "+mergeErr.Error())
+			log.Printf("import (merge): %v", mergeErr)
+			h.renderImportError(w, "Import failed: could not save the data. Nothing was changed.")
 			return
 		}
 	}

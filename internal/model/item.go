@@ -2,6 +2,18 @@ package model
 
 import "time"
 
+// now is the clock Compute uses; tests replace it.
+var now = time.Now
+
+// today returns the current calendar date in the server's local time zone
+// (TZ), expressed as UTC midnight to match how purchase and final dates are
+// stored. Using the UTC date instead would leave active items a day behind
+// the spreadsheet's TODAY() for part of every day anywhere east of UTC.
+func today() time.Time {
+	t := now()
+	return time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, time.UTC)
+}
+
 // AdditionalCost is a labelled cost entry. Amount can be negative (e.g. trade-in credit).
 type AdditionalCost struct {
 	Description string  `json:"description"`
@@ -57,7 +69,7 @@ func (item *Item) Compute() Calculated {
 		c.EffectiveEndDate = *item.FinalActivityDate
 		c.IsActive = false
 	} else {
-		c.EffectiveEndDate = time.Now().UTC().Truncate(24 * time.Hour)
+		c.EffectiveEndDate = today()
 		c.IsActive = true
 	}
 

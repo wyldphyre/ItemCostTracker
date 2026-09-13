@@ -319,6 +319,15 @@ func cellFloat(cells map[int]cell, col int) float64 {
 	if !ok || c.V == "" {
 		return 0
 	}
+	switch c.T {
+	case "", "n", "str":
+		// Numbers, and formula results that may hold a number.
+	default:
+		// For t="s" the <v> is an index into the shared-string table, not a
+		// value; booleans and errors aren't amounts or dates either. Reading
+		// them as numbers would turn text like "n/a" into a date in 1900.
+		return 0
+	}
 	f, err := strconv.ParseFloat(c.V, 64)
 	if err != nil {
 		return 0
