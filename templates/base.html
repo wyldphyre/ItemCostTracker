@@ -36,6 +36,7 @@
   </header>
 
   <main>
+    <div id="page-error" class="page-error" role="alert" hidden></div>
     {{block "content" .}}{{end}}
   </main>
 
@@ -60,6 +61,8 @@
     const activeOnly = document.getElementById('btn-filter-active').classList.contains('filter-on');
     const query = document.getElementById('search-input').value.trim().toLowerCase();
     document.querySelectorAll('#items-table-body tr').forEach(function(row) {
+      // The "No items yet" row is true regardless of filters; never hide it.
+      if (row.classList.contains('empty-row')) return;
       const name = row.querySelector('.col-name');
       const matchesSearch = !query || (name && name.textContent.trim().toLowerCase().includes(query));
       const matchesFilter = !activeOnly || row.classList.contains('active');
@@ -73,6 +76,30 @@
   // Reapply both filters after HTMX re-renders the table body
   document.addEventListener('htmx:afterSettle', function(e) {
     if (e.target.id === 'items-table-body') applyFilters();
+  });
+
+  // htmx does not swap 4xx/5xx responses, so without this a rejected save or a
+  // failed delete would just appear to do nothing. Show the server's message in
+  // the open modal's error box if there is one, otherwise above the table.
+  function errorBox() {
+    const modal = document.getElementById('modal');
+    return (modal.open && modal.querySelector('.form-error')) || document.getElementById('page-error');
+  }
+  function showError(message) {
+    const box = errorBox();
+    box.textContent = message;
+    box.hidden = false;
+    box.scrollIntoView({ block: 'nearest' });
+  }
+  document.addEventListener('htmx:beforeRequest', function() {
+    document.querySelectorAll('.form-error, #page-error').forEach(function(box) { box.hidden = true; });
+  });
+  document.addEventListener('htmx:responseError', function(e) {
+    const text = (e.detail.xhr.responseText || '').trim();
+    showError(text || ('Request failed (HTTP ' + e.detail.xhr.status + ').'));
+  });
+  document.addEventListener('htmx:sendError', function() {
+    showError('Could not reach the server. Check your connection and try again.');
   });
 </script>
 </body>

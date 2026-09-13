@@ -10,6 +10,7 @@
   </div>
 
   <div class="form-body">
+  <div class="form-error" role="alert" hidden></div>
   <div class="form-grid">
     <label class="field-full">
       Item Name
@@ -23,7 +24,7 @@
 
     <label>
       Purchase Price
-      <input type="number" name="purchase_price" step="0.01" min="0"
+      <input type="number" name="purchase_price" step="any" min="0"
              value="{{formatNumberInput .Item.PurchasePrice}}" required placeholder="0.00">
     </label>
 
@@ -35,19 +36,19 @@
 
     <label>
       Resale Value
-      <input type="number" name="resale_value" step="0.01" min="0"
+      <input type="number" name="resale_value" step="any" min="0"
              value="{{formatNumberInput .Item.ResaleValue}}" placeholder="0.00">
     </label>
 
     <label>
       Projected Years of Use
-      <input type="number" name="projected_years" step="0.5" min="0"
+      <input type="number" name="projected_years" step="any" min="0"
              value="{{formatNumberInput .Item.ProjectedYears}}" placeholder="0">
     </label>
 
     <label>
       Estimated Use Count
-      <input type="number" name="estimated_use_count" step="1" min="0"
+      <input type="number" name="estimated_use_count" step="any" min="0"
              value="{{formatNumberInput .Item.EstimatedUseCount}}" placeholder="0">
       <span class="field-hint">Uses per period — leave blank if not tracked</span>
     </label>
@@ -67,15 +68,14 @@
   <fieldset>
     <legend>Additional Costs</legend>
     <div id="cost-rows">
-      {{range $i, $cost := .Item.AdditionalCosts}}
-        {{template "cost_row" dict "Index" $i "Cost" $cost}}
+      {{range .Item.AdditionalCosts}}
+        {{template "cost_row" .}}
       {{end}}
     </div>
     <button type="button" class="btn-add-cost"
-            hx-post="/items/cost-row"
+            hx-get="/items/cost-row"
             hx-target="#cost-rows"
-            hx-swap="beforeend"
-            hx-vals='js:{index: document.querySelectorAll(".cost-row").length}'>
+            hx-swap="beforeend">
       + Add Cost
     </button>
   </fieldset>

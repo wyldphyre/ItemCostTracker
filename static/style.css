@@ -457,7 +457,9 @@ label select:focus {
   gap: 1rem;
 }
 
-.import-error {
+.import-error,
+.form-error,
+.page-error {
   background: #fee2e2;
   color: var(--danger);
   border: 1px solid #fca5a5;
@@ -465,6 +467,9 @@ label select:focus {
   padding: 0.625rem 0.875rem;
   font-size: 0.8125rem;
 }
+
+.form-error { margin-bottom: 1rem; }
+.page-error { margin: 0 1rem 0.75rem; }
 
 .import-mode {
   border: 1px solid var(--border);

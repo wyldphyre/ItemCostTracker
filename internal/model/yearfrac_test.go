@@ -177,3 +177,21 @@ func TestCompute_ProjectedCost(t *testing.T) {
 		t.Errorf("ProjectedCostPerYear = %.4f, want ~500.728", c.ProjectedCostPerYear)
 	}
 }
+
+// Active items must use the local calendar date, not the UTC one. At 07:30 on
+// 10 March in Perth (UTC+8) it is still 9 March in UTC.
+func TestCompute_ActiveItemUsesLocalDate(t *testing.T) {
+	perth := time.FixedZone("AWST", 8*3600)
+	defer func(orig func() time.Time) { now = orig }(now)
+	now = func() time.Time { return time.Date(2024, 3, 10, 7, 30, 0, 0, perth) }
+
+	item := &Item{PurchaseDate: date(2024, 3, 1), PurchasePrice: 90}
+	c := item.Compute()
+
+	if want := date(2024, 3, 10); !c.EffectiveEndDate.Equal(want) {
+		t.Errorf("EffectiveEndDate = %s, want %s", c.EffectiveEndDate.Format("2006-01-02"), want.Format("2006-01-02"))
+	}
+	if c.DaysActive != 9 {
+		t.Errorf("DaysActive = %v, want 9", c.DaysActive)
+	}
+}

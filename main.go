@@ -6,6 +6,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
+	_ "time/tzdata" // the scratch image has no zoneinfo; embed it so TZ works
 
 	"itemcosttracker/internal/handler"
 	"itemcosttracker/internal/store"
@@ -14,7 +16,7 @@ import (
 //go:embed templates static
 var embeddedFS embed.FS
 
-const version = "1.2.1"
+const version = "1.2.2"
 
 func main() {
 	dataDir := os.Getenv("DATA_DIR")
@@ -52,6 +54,9 @@ func main() {
 		addr = ":8080"
 	}
 
+	// An unknown TZ silently falls back to UTC, so make the zone in use visible.
+	zone, offset := time.Now().Zone()
+	log.Printf("Using time zone %s (UTC%+.1fh, TZ=%q)", zone, float64(offset)/3600, os.Getenv("TZ"))
 	log.Printf("ItemCostTracker listening on http://localhost%s", addr)
 	log.Fatal(http.ListenAndServe(addr, logRequests(handler.CheckOrigin(mux))))
 }

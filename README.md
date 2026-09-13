@@ -44,6 +44,7 @@ Open [http://localhost:8080](http://localhost:8080).
 |------------|----------|------------------------------------|
 | `ADDR`     | `:8080`  | TCP address to listen on           |
 | `DATA_DIR` | `./data` | Directory where `items.json` lives |
+| `TZ`       | host zone (UTC in Docker) | IANA time zone (e.g. `Australia/Perth`) used to decide today's date for active items |
 
 ```bash
 ADDR=:9000 DATA_DIR=/var/data ./itemcosttracker
@@ -157,7 +158,7 @@ deploy.ps1           Windows deploy script (load image + restart container)
 
 ## Data file
 
-Items are stored in `data/items.json` as a JSON array. The file is created automatically on first write. You can back it up, edit it directly, or restore it via the Import feature.
+Items are stored in `data/items.json` as a JSON object with a single `items` array (`{"items": [...]}`). The file is created automatically on first write. You can back it up, edit it directly, or restore it via the Import feature.
 
 ## Backup (Windows)
 

@@ -35,15 +35,7 @@
 
   <td class="col-actions">
     <div id="actions-{{.ID}}" class="action-btns">
-      <button class="btn-sm"
-              hx-get="/items/{{.ID}}/edit"
-              hx-target="#modal-content"
-              hx-swap="innerHTML"
-              hx-on::after-request="if(event.detail.successful){document.getElementById('modal').showModal()}">Edit</button>
-      <button class="btn-sm btn-danger"
-              hx-get="/items/{{.ID}}/confirm-delete"
-              hx-target="#actions-{{.ID}}"
-              hx-swap="innerHTML">Delete</button>
+      {{template "item_actions" .Item}}
     </div>
   </td>
 </tr>
